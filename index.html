@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Claude Code Workbench</title>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              claude: {
+                50: '#fdf8f6',
+                100: '#f2e8e5',
+                200: '#eaddd7',
+                500: '#d97757', // Approximate Claude brand color
+                600: '#b95e42',
+                900: '#3e1f16',
+              },
+              sidebar: '#0f1117',
+              panel: '#181a20',
+              border: '#272a34',
+              background: '#09090b',
+              foreground: '#e2e8f0',
+              primary: {
+                DEFAULT: '#4f46e5', // indigo-600
+                foreground: '#ffffff',
+              },
+              secondary: {
+                DEFAULT: '#272a34',
+                foreground: '#e2e8f0',
+              },
+              muted: {
+                DEFAULT: '#1e293b', // slate-800
+                foreground: '#94a3b8', // slate-400
+              },
+              accent: {
+                DEFAULT: '#1e293b',
+                foreground: '#e2e8f0',
+              },
+              destructive: {
+                DEFAULT: '#ef4444', // red-500
+                foreground: '#ffffff',
+              },
+            },
+            animation: {
+              'accordion-down': 'accordion-down 0.2s ease-out',
+              'accordion-up': 'accordion-up 0.2s ease-out',
+            },
+          },
+        },
+      };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/reactflow@11.11.4/dist/style.css" rel="stylesheet">
+    <style>
+      body {
+        background-color: #09090b; /* slate-950 */
+        color: #e2e8f0;
+      }
+      
+      /* --- Ultra-Minimal Scrollbar Global --- */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(71, 85, 105, 0.3); 
+        border-radius: 10px;
+        transition: background-color 0.2s;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(99, 102, 241, 0.5);
+      }
+      
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .glass-panel {
+        background: rgba(24, 26, 32, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      
+      /* Animation Utilities */
+      .animate-in {
+        animation-duration: 0.3s;
+        animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+        animation-fill-mode: both;
+      }
+
+      @keyframes slideInScale {
+        0% {
+          opacity: 0;
+          transform: scale(0.95) translateY(-8px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .animate-dropdown {
+        animation: slideInScale 0.2s cubic-bezier(0.2, 0, 0.13, 1.5) forwards;
+        transform-origin: top left;
+      }
+      
+      /* React Flow Customization */
+      .react-flow__node {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        width: auto !important;
+      }
+      .react-flow__handle {
+        width: 8px;
+        height: 8px;
+        background: #94a3b8;
+        border: 2px solid #1e293b;
+      }
+      .react-flow__edge-path {
+        stroke: #475569;
+        stroke-width: 2;
+      }
+      .react-flow__controls {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #272a34;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .react-flow__controls-button {
+        background: #181a20 !important;
+        border-bottom: 1px solid #272a34 !important;
+        fill: #94a3b8 !important;
+      }
+      .react-flow__controls-button:hover {
+        background: #272a34 !important;
+        fill: #fff !important;
+      }
+      .react-flow__attribution {
+        background: rgba(24, 26, 32, 0.5) !important;
+        color: #64748b !important;
+        border-top-left-radius: 4px;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+    "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react,react-dom",
+    "reactflow": "https://esm.sh/reactflow@11.11.4?external=react,react-dom",
+    "clsx": "https://esm.sh/clsx@2.1.1",
+    "tailwind-merge": "https://esm.sh/tailwind-merge@2.3.0",
+    "markdown-to-jsx": "https://esm.sh/markdown-to-jsx@7.4.3?external=react,react-dom",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "reactflow/": "https://aistudiocdn.com/reactflow@^11.11.4/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
